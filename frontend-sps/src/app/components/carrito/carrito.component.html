@@ -1,0 +1,45 @@
+<div class="carrito-container">
+  <header class="header">
+    <h1>Carrito de Compras</h1>
+    <button class="btn-secondary" (click)="seguirComprando()">Seguir Comprando</button>
+  </header>
+
+  <div class="empty-carrito" *ngIf="planes.length === 0 && !loading">
+    <p>No hay planes en tu carrito.</p>
+    <button class="btn-primary" (click)="seguirComprando()">Ir al Catálogo</button>
+  </div>
+
+  <div class="carrito-content" *ngIf="planes.length > 0">
+    <table class="carrito-table">
+      <thead>
+        <tr>
+          <th>Plan</th>
+          <th>Precio</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let plan of planes">
+          <td>{{ plan.nombrePlan }}</td>
+          <td>${{ plan.precio.toLocaleString() }}</td>
+          <td>
+            <button class="btn-eliminar" (click)="eliminar(plan.codigoPlan)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td><strong>Total</strong></td>
+          <td><strong>${{ precioTotal.toLocaleString() }}</strong></td>
+          <td></td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+    <button class="btn-primary btn-confirmar" (click)="confirmarCompra()" [disabled]="loading">
+      {{ loading ? 'Procesando...' : 'Confirmar Compra' }}
+    </button>
+  </div>
+</div>
