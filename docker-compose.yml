@@ -113,7 +113,7 @@ services:
       SALUDPAY_URL: http://localhost:5000
       JWT_SECRET: supersecretkey256bitsminimum1234567890
       INTERNAL_API_KEY: internal-secret-key-sps
-      TIMER_INTERVALO_MS: 30000
+      TIMER_INTERVALO_MS: 10000
       MAX_INTENTOS_SNS: 10
       COMPRA_BASE_URL: http://localhost:8082
     ports:
