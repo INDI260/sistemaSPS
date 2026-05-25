@@ -5,8 +5,7 @@
 .mtj.tmp/
 
 # Artefactos Maven
-target/
-*/target/
+**/target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
