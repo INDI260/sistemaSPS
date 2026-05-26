@@ -23,6 +23,9 @@
 hs_err_pid*
 replay_pid*
 
+# Maven build output
+target/
+
 # IDEs
 .idea/
 *.iml
@@ -31,6 +34,9 @@ replay_pid*
 .vscode/
 *.swp
 *.swo
+.settings/
+.project
+.classpath
 
 # Docker
 .env
