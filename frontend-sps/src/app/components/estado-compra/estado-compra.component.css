@@ -1,0 +1,126 @@
+.estado-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  margin: 0;
+  color: #333;
+}
+
+.btn-actualizar {
+  padding: 0.5rem 1.25rem;
+  background: #f1f3f4;
+  color: #333;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-actualizar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-actualizar:hover:not(:disabled) {
+  background: #e8eaed;
+}
+
+.loading {
+  text-align: center;
+  color: #666;
+  padding: 2rem;
+}
+
+.error-message {
+  color: #d93025;
+  text-align: center;
+}
+
+.empty-state {
+  text-align: center;
+  color: #666;
+  padding: 3rem;
+}
+
+.compras-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.compras-table th {
+  background: #f8f9fa;
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 2px solid #e0e0e0;
+  color: #555;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.compras-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #f0f0f0;
+  vertical-align: top;
+}
+
+.compras-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.estado-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.estado-pendiente-sns {
+  background: #f1f3f4;
+  color: #5f6368;
+}
+
+.estado-proceso-sns {
+  background: #fef7e0;
+  color: #e37400;
+}
+
+.estado-aprobado-sns {
+  background: #e8f0fe;
+  color: #1a73e8;
+}
+
+.estado-pendiente-pago {
+  background: #fef3e0;
+  color: #e65100;
+}
+
+.estado-pagado {
+  background: #e6f4ea;
+  color: #1e7e34;
+}
+
+.estado-completado {
+  background: #ceead6;
+  color: #0d652d;
+}
+
+.estado-rechazado-sns {
+  background: #fce8e6;
+  color: #d93025;
+}
+
+.estado-cancelado {
+  background: #d93025;
+  color: white;
+}

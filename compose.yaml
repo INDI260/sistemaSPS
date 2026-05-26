@@ -1,0 +1,22 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    ports:
+      - "8080:80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - saludpay-frontend
+
+  saludpay-frontend:
+    build:
+      context: .
+      dockerfile: saludpay-frontend/Dockerfile
+    ports:
+      - "5001:5001"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - SALUDPAY_API_URL=http://10.43.100.66:5000

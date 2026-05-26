@@ -1,0 +1,42 @@
+<div class="estado-container">
+  <header class="header">
+    <h1>Mis Compras</h1>
+    <button class="btn-actualizar" (click)="cargarCompras()" [disabled]="loading">
+      {{ loading ? 'Cargando...' : 'Actualizar' }}
+    </button>
+  </header>
+
+  <div class="loading" *ngIf="loading">Cargando compras...</div>
+  <p class="error-message" *ngIf="error">{{ error }}</p>
+
+  <div class="empty-state" *ngIf="!loading && !error && compras.length === 0">
+    <p>No tienes compras registradas.</p>
+  </div>
+
+  <table class="compras-table" *ngIf="!loading && !error && compras.length > 0">
+    <thead>
+      <tr>
+        <th>N° Compra</th>
+        <th>Fecha</th>
+        <th>Planes</th>
+        <th>Precio Total</th>
+        <th>Estado</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let compra of compras">
+        <td>{{ compra.numeroCompra }}</td>
+        <td>{{ compra.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</td>
+        <td>
+          <div *ngFor="let plan of compra.planes">{{ plan.nombrePlan }}</div>
+        </td>
+        <td>${{ compra.precioTotal.toLocaleString() }}</td>
+        <td>
+          <span class="estado-badge" [ngClass]="getEstadoClass(compra.estado)">
+            {{ compra.estado }}
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

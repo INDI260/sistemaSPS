@@ -1,0 +1,37 @@
+<div class="catalogo-container">
+  <header class="header">
+    <h1>Planes de Salud</h1>
+    <div class="header-actions">
+      <span class="carrito-badge" *ngIf="cantidadCarrito > 0">
+        {{ cantidadCarrito }} plan(es)
+      </span>
+      <button class="btn-carrito" (click)="irAlCarrito()">Ver Carrito</button>
+    </div>
+  </header>
+
+  <div class="loading" *ngIf="loading">Cargando planes...</div>
+  <p class="error-message" *ngIf="error">{{ error }}</p>
+
+  <div class="planes-grid" *ngIf="!loading && !error">
+    <div class="plan-card" *ngFor="let plan of planes">
+      <div class="plan-header">
+        <h3>{{ plan.nombrePlan }}</h3>
+        <span class="plan-precio">${{ plan.precio.toLocaleString() }}</span>
+      </div>
+      <p class="plan-descripcion">{{ plan.descripcion }}</p>
+
+      <h4>Servicios incluidos:</h4>
+      <ul class="servicios-list">
+        <li *ngFor="let servicio of plan.serviciosMedicos">
+          <span class="servicio-nombre">{{ servicio.nombre }}</span>
+          <span class="servicio-tipo" [class]="'tipo-' + servicio.tipo.toLowerCase()">{{ servicio.tipo }}</span>
+          <span class="servicio-precio">${{ servicio.precio.toLocaleString() }}</span>
+        </li>
+      </ul>
+
+      <button class="btn-agregar" (click)="agregarAlCarrito(plan)">
+        Agregar al carrito
+      </button>
+    </div>
+  </div>
+</div>
