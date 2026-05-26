@@ -1,0 +1,54 @@
+services:
+
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASS:-Sps2026!}
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pSps2026!"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ms-shc:
+    build: ./ms-shc
+    restart: unless-stopped
+    ports:
+      - "8084:8084"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DB_SHC_URL: jdbc:mysql://mysql:3306/db_shc?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      DB_SHC_USER: ${DB_SHC_USER:-root}
+      DB_SHC_PASS: ${DB_SHC_PASS:-Sps2026!}
+      RABBITMQ_HOST: ${RABBITMQ_HOST:-10.43.99.13}
+      RABBITMQ_PORT: ${RABBITMQ_PORT:-5672}
+      RABBITMQ_USER: ${RABBITMQ_USER:-sps_user}
+      RABBITMQ_PASS: ${RABBITMQ_PASS:-sps_pass}
+      JWT_SECRET: ${JWT_SECRET:-supersecretkey256bitsminimum1234567890}
+
+  ms-sam:
+    build: ./ms-sam
+    restart: unless-stopped
+    ports:
+      - "8085:8085"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DB_SAM_URL: jdbc:mysql://mysql:3306/db_sam?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      DB_SAM_USER: ${DB_SAM_USER:-root}
+      DB_SAM_PASS: ${DB_SAM_PASS:-Sps2026!}
+      RABBITMQ_HOST: ${RABBITMQ_HOST:-10.43.99.13}
+      RABBITMQ_PORT: ${RABBITMQ_PORT:-5672}
+      RABBITMQ_USER: ${RABBITMQ_USER:-sps_user}
+      RABBITMQ_PASS: ${RABBITMQ_PASS:-sps_pass}
+      JWT_SECRET: ${JWT_SECRET:-supersecretkey256bitsminimum1234567890}
+
+volumes:
+  mysql-data:
