@@ -13,7 +13,6 @@ import { ConfirmacionComponent } from './components/confirmacion/confirmacion.co
 import { EstadoCompraComponent } from './components/estado-compra/estado-compra.component';
 
 import { JwtInterceptor } from './core/interceptors/jwt.interceptor';
-import { MockInterceptor } from './core/interceptors/mock.interceptor';
 
 @NgModule({
   declarations: [
@@ -32,7 +31,6 @@ import { MockInterceptor } from './core/interceptors/mock.interceptor';
     ReactiveFormsModule
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: MockInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]

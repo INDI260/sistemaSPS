@@ -1,0 +1,64 @@
+@page
+@model ComprasModel
+@{
+    ViewData["Title"] = "Compras Pendientes";
+    ViewData["Autenticado"] = true;
+    ViewData["NombreUsuario"] = Model.NombreUsuario;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Compras Pendientes de Pago</h2>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.MensajeExito))
+{
+    <div class="alert alert-success">@Model.MensajeExito</div>
+}
+
+@if (!string.IsNullOrEmpty(Model.ErrorMensaje))
+{
+    <div class="alert alert-danger">@Model.ErrorMensaje</div>
+}
+
+@if (Model.Compras.Count == 0)
+{
+    <div class="alert alert-info text-center py-4">
+        <h5 class="mb-0">No tiene compras pendientes de pago.</h5>
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-primary">
+                <tr>
+                    <th>N° Compra</th>
+                    <th>Cliente</th>
+                    <th>Valor</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var compra in Model.Compras)
+                {
+                    <tr>
+                        <td>@compra.NumeroCompra</td>
+                        <td>@compra.NombreCliente</td>
+                        <td>$ @compra.Valor.ToString("N0")</td>
+                        <td>
+                            <span class="badge bg-warning text-dark">@compra.Estado</span>
+                        </td>
+                        <td>
+                            <form method="post" asp-page-handler="Pagar">
+                                <input type="hidden" name="numeroCompra" value="@compra.NumeroCompra" />
+                                <input type="hidden" name="valor" value="@compra.Valor" />
+                                <button type="submit" class="btn btn-success btn-sm">Pagar</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
