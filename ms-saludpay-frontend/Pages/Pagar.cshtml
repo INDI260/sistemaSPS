@@ -1,0 +1,45 @@
+@page
+@model SPS.SaludPay.Frontend.Pages.PagarModel
+@{
+    ViewData["Title"] = "Confirmar Pago";
+}
+
+<div class="card" style="max-width:500px;margin:0 auto;">
+    <h2 style="margin-bottom:1.5rem;color:#1a73e8;">Confirmar Pago</h2>
+
+    @if (Model.PagoExitoso)
+    {
+        <div class="alert alert-success">
+            &#10003; Pago procesado exitosamente.
+        </div>
+        <a href="/MisCompras" class="btn btn-primary">Volver a Mis Compras</a>
+    }
+    else
+    {
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="alert alert-danger">@Model.ErrorMessage</div>
+        }
+
+        <div style="background:#f8f9fa;padding:1.2rem;border-radius:6px;margin-bottom:1.5rem;">
+            <p style="font-size:1.05rem;">
+                Va a pagar
+                <strong style="color:#34a853;font-size:1.2rem;">$@Model.Valor.ToString("N2")</strong>
+                por la compra N°
+                <strong>@Model.NumeroCompra</strong>
+            </p>
+        </div>
+
+        <form method="post">
+            <input type="hidden" name="numeroCompra" value="@Model.NumeroCompra" />
+            <input type="hidden" name="valor" value="@Model.Valor" />
+            <button type="submit" class="btn btn-success" style="width:100%;">
+                &#9654; Confirmar Pago
+            </button>
+        </form>
+
+        <div style="margin-top:1rem;text-align:center;">
+            <a href="/MisCompras" style="color:#666;font-size:.9rem;">Cancelar y volver</a>
+        </div>
+    }
+</div>

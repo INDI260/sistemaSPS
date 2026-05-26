@@ -1,0 +1,52 @@
+@page
+@model SPS.SaludPay.Frontend.Pages.MisComprasModel
+@{
+    ViewData["Title"] = "Mis Compras Pendientes";
+}
+
+<div class="card">
+    <h2 style="margin-bottom:1.5rem; color:#1a73e8;">Mis Compras Pendientes</h2>
+
+    @if (!Model.Compras.Any())
+    {
+        <p style="color:#777;">No tiene compras pendientes de pago.</p>
+    }
+    else
+    {
+        <table>
+            <thead>
+                <tr>
+                    <th>N° Compra</th>
+                    <th>Valor Pendiente</th>
+                    <th>Estado</th>
+                    <th>Fecha</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var compra in Model.Compras)
+                {
+                    <tr>
+                        <td>@compra.NumeroCompra</td>
+                        <td>$@compra.ValorPendiente.ToString("N2")</td>
+                        <td>
+                            <span style="background:#fff3cd;color:#856404;padding:.2rem .6rem;border-radius:12px;font-size:.85rem;">
+                                @compra.Estado
+                            </span>
+                        </td>
+                        <td>@compra.FechaCreacion.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>
+                            @if (compra.Estado == "PENDIENTE")
+                            {
+                                <a href="/Pagar?numeroCompra=@compra.NumeroCompra&valor=@compra.ValorPendiente"
+                                   class="btn btn-success" style="font-size:.85rem;padding:.4rem .9rem;">
+                                    Pagar
+                                </a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
