@@ -1,22 +1,250 @@
 services:
-  frontend:
-    build:
-      context: .
-      dockerfile: nginx/Dockerfile
+
+  # ─────────────────────────────────────────
+  # Bases de datos MySQL
+  # ─────────────────────────────────────────
+  db-compra:
+    image: mysql:8.0
+    container_name: sps-db-compra
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: db_compra
+      MYSQL_USER: sps_compra
+      MYSQL_PASSWORD: sps_compra_pass
     ports:
-      - "8080:80"
+      - "3307:3306"
+    volumes:
+      - db-compra-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "--password=rootpass"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+
+  db-sns:
+    image: mysql:8.0
+    container_name: sps-db-sns
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: db_sns
+      MYSQL_USER: sps_sns
+      MYSQL_PASSWORD: sps_sns_pass
+    ports:
+      - "3308:3306"
+    volumes:
+      - db-sns-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "--password=rootpass"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+
+  db-shc:
+    image: mysql:8.0
+    container_name: sps-db-shc
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: db_shc
+      MYSQL_USER: sps_shc
+      MYSQL_PASSWORD: sps_shc_pass
+    ports:
+      - "3309:3306"
+    volumes:
+      - db-shc-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "--password=rootpass"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+
+  db-sam:
+    image: mysql:8.0
+    container_name: sps-db-sam
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: db_sam
+      MYSQL_USER: sps_sam
+      MYSQL_PASSWORD: sps_sam_pass
+    ports:
+      - "3310:3306"
+    volumes:
+      - db-sam-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "--password=rootpass"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+
+  # ─────────────────────────────────────────
+  # RabbitMQ (broker AMQP)
+  # ─────────────────────────────────────────
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: sps-rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: sps_user
+      RABBITMQ_DEFAULT_PASS: sps_pass
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  # ─────────────────────────────────────────
+  # Microservicios Spring Boot
+  # ─────────────────────────────────────────
+  ms-sns:
+    build:
+      context: ./ms-sns
+      dockerfile: Dockerfile
+    image: sps/ms-sns:latest
+    container_name: sps-ms-sns
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: mysql
+      DB_SNS_URL: jdbc:mysql://db-sns:3306/db_sns?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8
+      DB_SNS_USER: sps_sns
+      DB_SNS_PASS: sps_sns_pass
+      SNS_TIEMPO_PROCESAMIENTO_MS: 15000
+    ports:
+      - "8083:8083"
+    depends_on:
+      db-sns:
+        condition: service_healthy
+
+  ms-compra:
+    build:
+      context: ./ms-compra
+      dockerfile: Dockerfile
+    image: sps/ms-compra:latest
+    container_name: sps-ms-compra
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: mysql
+      DB_COMPRA_URL: jdbc:mysql://db-compra:3306/db_compra?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8
+      DB_COMPRA_USER: sps_compra
+      DB_COMPRA_PASS: sps_compra_pass
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: sps_user
+      RABBITMQ_PASS: sps_pass
+      SNS_URL: http://ms-sns:8083
+      SALUDPAY_URL: http://host.docker.internal:5000
+      JWT_SECRET: supersecretkey256bitsminimum1234567890
+      INTERNAL_API_KEY: internal-secret-key-sps
+      TIMER_INTERVALO_MS: 10000
+      MAX_INTENTOS_SNS: 10
+      COMPRA_BASE_URL: http://localhost:8082
+    ports:
+      - "8082:8082"
+    depends_on:
+      db-compra:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      ms-sns:
+        condition: service_started
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    depends_on:
-      - saludpay-frontend
 
+  ms-shc:
+    build:
+      context: ./ms-shc
+      dockerfile: Dockerfile
+    image: sps/ms-shc:latest
+    container_name: sps-ms-shc
+    restart: unless-stopped
+    environment:
+      DB_SHC_URL: jdbc:mysql://db-shc:3306/db_shc?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      DB_SHC_USER: sps_shc
+      DB_SHC_PASS: sps_shc_pass
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: sps_user
+      RABBITMQ_PASS: sps_pass
+      JWT_SECRET: supersecretkey256bitsminimum1234567890
+    ports:
+      - "8084:8084"
+    depends_on:
+      db-shc:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  ms-sam:
+    build:
+      context: ./ms-sam
+      dockerfile: Dockerfile
+    image: sps/ms-sam:latest
+    container_name: sps-ms-sam
+    restart: unless-stopped
+    environment:
+      DB_SAM_URL: jdbc:mysql://db-sam:3306/db_sam?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      DB_SAM_USER: sps_sam
+      DB_SAM_PASS: sps_sam_pass
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: sps_user
+      RABBITMQ_PASS: sps_pass
+      JWT_SECRET: supersecretkey256bitsminimum1234567890
+    ports:
+      - "8085:8085"
+    depends_on:
+      db-sam:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  # ─────────────────────────────────────────
+  # SaludPay Frontend (.NET Razor Pages)
+  # ─────────────────────────────────────────
   saludpay-frontend:
     build:
       context: .
       dockerfile: saludpay-frontend/Dockerfile
+    container_name: sps-saludpay-frontend
+    restart: unless-stopped
     ports:
       - "5001:5001"
+    environment:
+      - SALUDPAY_API_URL=http://host.docker.internal:5000
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    environment:
-      - SALUDPAY_API_URL=http://10.43.100.66:5000
+
+  # ─────────────────────────────────────────
+  # Frontend SPS (Angular + nginx)
+  # ─────────────────────────────────────────
+  frontend:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    container_name: sps-frontend
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      - saludpay-frontend
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  db-compra-data:
+  db-sns-data:
+  db-shc-data:
+  db-sam-data:
+  rabbitmq-data:
