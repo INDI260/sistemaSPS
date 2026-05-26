@@ -20,3 +20,5 @@ services:
       - "host.docker.internal:host-gateway"
     environment:
       - SALUDPAY_API_URL=http://10.43.100.66:5000
+      - COMPRA_API_URL=http://frontend:80/api/compra/
+      - NGINX_URL=http://frontend:80/
