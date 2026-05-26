@@ -116,7 +116,7 @@ services:
       TIMER_INTERVALO_MS: 10000
       MAX_INTENTOS_SNS: 10
       COMPRA_BASE_URL: http://10.43.99.13:8082
-      MAIL_HOST: smtp.office365.com
+      MAIL_HOST: smtp-mail.outlook.com
       MAIL_PORT: 587
       MAIL_USER: ${MAIL_USER}
       MAIL_PASS: ${MAIL_PASS}
