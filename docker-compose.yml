@@ -110,12 +110,16 @@ services:
       RABBITMQ_USER: sps_user
       RABBITMQ_PASS: sps_pass
       SNS_URL: http://ms-sns:8083
-      SALUDPAY_URL: http://localhost:5000
+      SALUDPAY_URL: http://10.43.100.66:5000
       JWT_SECRET: supersecretkey256bitsminimum1234567890
       INTERNAL_API_KEY: internal-secret-key-sps
       TIMER_INTERVALO_MS: 10000
       MAX_INTENTOS_SNS: 10
-      COMPRA_BASE_URL: http://localhost:8082
+      COMPRA_BASE_URL: http://10.43.99.13:8082
+      MAIL_HOST: smtp.office365.com
+      MAIL_PORT: 587
+      MAIL_USER: CORREO_OUTLOOK_AQUI
+      MAIL_PASS: CONTRASENA_AQUI
     ports:
       - "8082:8082"
     depends_on:
