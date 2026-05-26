@@ -118,8 +118,8 @@ services:
       COMPRA_BASE_URL: http://10.43.99.13:8082
       MAIL_HOST: smtp.office365.com
       MAIL_PORT: 587
-      MAIL_USER: CORREO_OUTLOOK_AQUI
-      MAIL_PASS: CONTRASENA_AQUI
+      MAIL_USER: ${MAIL_USER}
+      MAIL_PASS: ${MAIL_PASS}
     ports:
       - "8082:8082"
     depends_on:
